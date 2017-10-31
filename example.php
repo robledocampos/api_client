@@ -1,6 +1,8 @@
 <?php
 
-require_once("Http/ApiClient.php");
+require "autoload.php";
+
+use ApiCaller\Curl;
 
 const _API_URL_ = '<apiurl>';
 const USER_ID = '<apikey>';
@@ -27,9 +29,12 @@ class example{
         if (!empty($sort_by)) $data['SortBy'] = $sort_by;
         if (!empty($sort_direction)) $data['SortDirection'] = $sort_direction;
         $parameters = $this->signature($data);
-        $apiClient = new ApiClient(_API_URL_);
+        $apiClient = new Curl(_API_URL_);
+        $headers = [
+            'Content-Type' => 'application/x-www-form-urlencoded'
+        ];
 
-        return $apiClient->call($data['Action'], $parameters, null, $contentType = "application/x-www-form-urlencoded", $type = "GET");
+        return $apiClient->call($data['Action'], $parameters, $headers, $type = "GET");
     }
 
     private function signature($data)
