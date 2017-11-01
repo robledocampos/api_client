@@ -7,6 +7,7 @@ class Curl{
 
     private $debug = 1;
     private $apiUrl = null;
+    private $numCallsPerMinute = null;
 
     public function __construct($apiUrl)
     {
@@ -25,6 +26,8 @@ class Curl{
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $type);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        //curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         if ($request) {
             print_r($request);
@@ -35,9 +38,28 @@ class Curl{
         }
         $curl_result = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $header = substr($curl_result, 0, $header_size);
+        $body = substr($curl_result, $header_size);
+        $result['httpCode']= $httpCode;
+        $result['header']= $this::getHeaders($header);
+        $result['body']= $body;
         curl_close($ch);
-        $result = json_decode($curl_result,true);
-        $result['response_code']= $httpCode;
         return $result;
+    }
+
+    private static function getHeaders($header)
+    {
+        $headers = [];
+        $lines = explode("\n",$header);
+        foreach ($lines as $line) {
+            $dotsPosition = strpos($line,":");
+            if ($dotsPosition !== false) {
+                $headerName = substr($line,0, $dotsPosition);
+                $headerValue = substr($line, $dotsPosition+2, strlen($line));
+                $headers[$headerName] = $headerValue;
+            }
+        }
+        return $headers;
     }
 }
