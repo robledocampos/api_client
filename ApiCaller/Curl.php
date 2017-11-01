@@ -7,7 +7,6 @@ class Curl{
 
     private $debug = 1;
     private $apiUrl = null;
-    private $numCallsPerMinute = null;
 
     public function __construct($apiUrl)
     {
@@ -27,7 +26,6 @@ class Curl{
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $type);
         curl_setopt($ch, CURLOPT_HEADER, 1);
-        //curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         if ($request) {
             print_r($request);
@@ -45,6 +43,7 @@ class Curl{
         $result['header']= $this::getHeaders($header);
         $result['body']= $body;
         curl_close($ch);
+
         return $result;
     }
 
@@ -60,6 +59,34 @@ class Curl{
                 $headers[$headerName] = $headerValue;
             }
         }
+
         return $headers;
     }
+
+    private static function calcApiCallRate($headers)
+    {
+        $apiCallRate = null;
+        $remainingCalls = null;
+        $remainingTime = null;
+        foreach ($headers as $index => $value){
+            $rateLimitHeader = strtolower(str_replace("-","", $index));
+            switch ($rateLimitHeader) {
+                case "xratelimitremaning":
+                    $remainingCalls = $value;
+                    break;
+                case "xratelimitreset":
+                    $remainingTime = $value;
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (!empty($remainingCalls) && !empty($remainingTime)){
+            $apiCallRate = $remainingTime/$remainingCalls;
+        }
+
+        return $apiCallRate;
+    }
+
+
 }
