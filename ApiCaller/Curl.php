@@ -63,9 +63,9 @@ class Curl{
         return $headers;
     }
 
-    private static function calcApiCallRate($headers)
+    private static function timeToWait($headers)
     {
-        $apiCallRate = null;
+        $waitingTime = 0;
         $remainingCalls = null;
         $remainingTime = null;
         foreach ($headers as $index => $value){
@@ -82,10 +82,10 @@ class Curl{
             }
         }
         if (!empty($remainingCalls) && !empty($remainingTime)){
-            $apiCallRate = $remainingTime/$remainingCalls;
+            $waitingTime = $remainingTime/$remainingCalls;
         }
 
-        return $apiCallRate;
+        return $waitingTime;
     }
 
 
