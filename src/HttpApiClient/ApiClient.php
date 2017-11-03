@@ -12,21 +12,28 @@ class ApiClient{
         $this->apiUrl = $apiUrl;
     }
 
-    public function call($action, $parameters = null, $request = null, $headers = null, $type = "GET")
+    public function call($action, $parameters = null, $request = null, $headers = null, $cookie = null, $type = "GET",
+                         $ssl = false)
     {
         $url = $this->apiUrl .= $action;
-        if ($parameters)
-            $url .= "?".http_build_query($parameters, '', '&');
+        if ($parameters) {
+            $url .= "?" . http_build_query($parameters, '', '&');
+        }
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $ssl);
+        if ($ssl) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $type);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         if ($headers) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        }
+        if ($cookie) {
+            curl_setopt($ch, CURLOPT_COOKIE, $cookie);
         }
         if ($request) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
@@ -63,7 +70,14 @@ class ApiClient{
         return $headers;
     }
 
-    private static function timeToWait($headers)
+    public static function getCookies($delimiter, $fullCookie){
+        $cookies = explode($delimiter, $fullCookie);
+        $cookies = $cookies;
+
+        return $cookies;
+    }
+
+    public static function timeToWait($headers)
     {
         $waitingTime = 0;
         $remainingCalls = null;
@@ -87,6 +101,8 @@ class ApiClient{
 
         return $waitingTime;
     }
+
+
 
 
 }
