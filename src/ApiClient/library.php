@@ -1,6 +1,5 @@
 <?php
 
-
 namespace ApiClient;
 
 class library{

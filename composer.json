@@ -9,6 +9,11 @@
   ],
   "minimum-stability": "dev",
   "require": {
-
+    "php": "ˆ5"
+  },
+  "autoload": {
+    "psr-0": {
+      "ApiClient": "src/"
+    }
   }
 }
