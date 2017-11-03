@@ -12,7 +12,7 @@ class ApiClient{
         $this->apiUrl = $apiUrl;
     }
 
-    public function call($action, $parameters = null, $request, $headers, $type = "GET")
+    public function call($action, $parameters = null, $request = null, $headers = null, $type = "GET")
     {
         $url = $this->apiUrl .= $action;
         if ($parameters)
@@ -25,9 +25,10 @@ class ApiClient{
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $type);
         curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        if ($headers) {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        }
         if ($request) {
-            print_r($request);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
         }
         if ($this->debug) {
