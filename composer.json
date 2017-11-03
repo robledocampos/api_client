@@ -9,7 +9,7 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "php": "ˆ5"
+    "php": ">=5.*"
   },
   "autoload": {
     "psr-0": {
