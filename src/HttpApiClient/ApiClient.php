@@ -1,8 +1,8 @@
 <?php
 
-namespace ApiClient;
+namespace HttpApiClient;
 
-class library{
+class ApiClient{
 
     private $debug = 1;
     private $apiUrl = null;
