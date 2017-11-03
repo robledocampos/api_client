@@ -1,0 +1,14 @@
+{
+  "name": "robledocampos/api_client",
+  "description": "http client for API consuming",
+  "authors": [
+    {
+      "name": "Robledo Campos",
+      "email": "robledocampos@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+
+  }
+}

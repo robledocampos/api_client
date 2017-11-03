@@ -1,9 +1,9 @@
 <?php
 
 
-namespace ApiCaller;
+namespace ApiClient;
 
-class Curl{
+class library{
 
     private $debug = 1;
     private $apiUrl = null;
