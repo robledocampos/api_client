@@ -4,31 +4,39 @@ namespace HttpApiClient;
 
 class ApiClient{
 
-    private $debug = 1;
     private $apiUrl = null;
+    private $ssl = null;
+    private $debug= null;
+    private $connectTimeOut = null;
+    private $timeOut = null;
 
-    public function __construct($apiUrl)
+    public function __construct($apiUrl, $ssl = null, $debug = null, $connectTimeout = null, $timeOut = null)
     {
         $this->apiUrl = $apiUrl;
+        $this->ssl = !empty($ssl) ? $ssl : false;
+        $this->debug = !empty($debug) ? $debug : true;
+        $this->connectTimeout = !empty($connectTimeout) ? $connectTimeout : 10;
+        $this->timeOut = !empty($timeOut) ? $timeOut : 120;
     }
 
-    public function call($action, $parameters = null, $request = null, $headers = null, $cookie = null, $type = "GET",
-                         $ssl = false)
+    public function call($endpoint, $parameters = null, $request = null, $headers = null, $cookie = null, $type = "GET", $ssl = false)
     {
-        $url = $this->apiUrl .= $action;
+        $url = $this->apiUrl .= $endpoint;
         if ($parameters) {
             $url .= "?" . http_build_query($parameters, '', '&');
         }
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $type);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->connectTimeOut);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeOut);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $ssl);
         if ($ssl) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         }
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $type);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
         if ($headers) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
@@ -46,9 +54,9 @@ class ApiClient{
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $header = substr($curl_result, 0, $header_size);
         $body = substr($curl_result, $header_size);
-        $result['httpCode']= $httpCode;
-        $result['header']= $this::getHeaders($header);
-        $result['body']= $body;
+        $result['httpCode'] = $httpCode;
+        $result['header'] = $this::getHeaders($header);
+        $result['body'] = $body;
         curl_close($ch);
 
         return $result;
@@ -72,7 +80,6 @@ class ApiClient{
 
     public static function getCookies($delimiter, $fullCookie){
         $cookies = explode($delimiter, $fullCookie);
-        $cookies = $cookies;
 
         return $cookies;
     }
@@ -101,8 +108,4 @@ class ApiClient{
 
         return $waitingTime;
     }
-
-
-
-
 }
