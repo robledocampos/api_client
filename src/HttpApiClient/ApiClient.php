@@ -6,7 +6,7 @@ class ApiClient{
 
     private $apiUrl = null;
     private $ssl = null;
-    private $debug= null;
+    private $debug = null;
     private $connectTimeOut = null;
     private $timeOut = null;
 
@@ -14,7 +14,7 @@ class ApiClient{
     {
         $this->apiUrl = $apiUrl;
         $this->ssl = !empty($ssl) ? $ssl : false;
-        $this->debug = !empty($debug) ? $debug : true;
+        $this->debug = empty($debug) ? $debug : true;
         $this->connectTimeout = !empty($connectTimeout) ? $connectTimeout : 10;
         $this->timeOut = !empty($timeOut) ? $timeOut : 120;
     }
